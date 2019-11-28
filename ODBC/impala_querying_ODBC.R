@@ -19,16 +19,40 @@ odbcListDrivers()
 # Default name on Windows is usually "Cloudera ODBC Driver for Impala"
 # Default name on Linux is usually "Cloudera ODBC Driver for Impala 64-bit"
 
+
+########## Connection without Kerberos ##########
+
 con <- DBI::dbConnect(odbc::odbc(),
                       Driver   = "Cloudera ODBC Driver for Impala 64-bit",
-                      Host     = "host",
+                      Host     = "dn1",
                       Port     = 21050,
                       Schema   = "default",
-                      # Remove the options below if you don't need authentification
                       AuthMech = 3,
                       UseSASL  = 1,
                       UID      = "user",
                       PWD      = "password")
+
+
+########## Connection with Kerberos ##########
+
+library(getPass)
+# Method 1 (interactive) : Use in Rstudio. Interactive pop up to enter password
+system('kinit user',input=getPass('Enter your password: '))
+
+# Method 2 (scripts) : Use outside of Rstudio. 
+# Password is written in command line or stored in a environment variable
+# Uncomment next line to use
+# system('echo password | kinit user')
+
+con <- dbConnect(odbc::odbc(),
+                 Driver = "Cloudera ODBC Driver for Impala 64-bit",
+                 Host = "dn1",
+                 Port = 21050,
+                 Schema = "default",
+                 AuthMech = 1)
+
+
+########## Execute queries on connection ##########
 
 # On the version 2.5.39 of the Linux Impala ODBC driver, the method dbListTables returns only the first letter of each schema and table
 # One workaround is to use plain SQL "show schemas" and "show tables"
