@@ -4,27 +4,11 @@ library(dplyr) # Data manipulation library
 library(dbplyr) # Converts data manipulation written in R to SQL
 library(implyr) # Same as above but specific for Impala
 
-# Windows :
-# Dl msi from https://www.cloudera.com/downloads/connectors/impala/odbc/2-5-39.html
-# install .msi
-
-# Linux
-# Dl deb from https://www.cloudera.com/downloads/connectors/impala/odbc/2-5-39.html
-# install .deb
-# sudo odbcinst -i -d -f /opt/cloudera/impalaodbc/Setup/odbcinst.ini
-
-# Check that the driver is correctly installed, then copy and paste the driver name
-# in the Driver attribute of the dbConnect function
-odbcListDrivers()
-# Default name on Windows is usually "Cloudera ODBC Driver for Impala"
-# Default name on Linux is usually "Cloudera ODBC Driver for Impala 64-bit"
-
-
 ########## Connection without Kerberos ##########
 
 con <- DBI::dbConnect(odbc::odbc(),
                       Driver   = "Cloudera ODBC Driver for Impala 64-bit",
-                      Host     = "dn1",
+                      Host     = "dn1.pX.company.prod.saagie.io",
                       Port     = 21050,
                       Schema   = "default",
                       AuthMech = 3,
@@ -45,20 +29,16 @@ system('kinit user',input=getPass('Enter your password: '))
 # system('echo password | kinit user')
 
 con <- dbConnect(odbc::odbc(),
-                 Driver = "Cloudera ODBC Driver for Impala 64-bit",
-                 Host = "dn1",
-                 Port = 21050,
-                 Schema = "default",
+                 Driver   = "Cloudera ODBC Driver for Impala 64-bit",
+                 Host     = "dn1.pX.company.prod.saagie.io",
+                 Port     = 21050,
+                 Schema   = "default",
                  AuthMech = 1)
 
 
 ########## Execute queries on connection ##########
 
-# On the version 2.5.39 of the Linux Impala ODBC driver, the method dbListTables returns only the first letter of each schema and table
-# One workaround is to use plain SQL "show schemas" and "show tables"
-
 # List all tables from all schemas
-dbListTables(con)
 dbGetQuery(con, 'show schemas')
 dbGetQuery(con, 'show tables')
 
